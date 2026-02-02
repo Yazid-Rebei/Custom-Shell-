@@ -1,0 +1,27 @@
+Basic information of a lifetime of a Shell :
+- initialisation :shell would read and execute its configuration files. 
+These change aspects of the shell’s behavior.
+- Interpret :the shell reads the command from stdin and execute them  
+- terminat : the shell execute any shutdown commands free up space and terminates. 
+
+Remarque : the Shell does not execute the command directly .
+it asks the kernel to do is via fork + exec 
+
+What Shell does  :
+1.reads an input 
+2.parse the command (divise it into words)
+3.test the command type (built in or external)
+4.if the command built in --> execute the built in function \ or external --> fork() process and execute 
+5.loop forever (only when we kill the process )
+
+
+
+Work : 
+1.Reads an input  : we will be in the shell interface for long time so we need to make a loop only interrept when a signal (crtl+c) or EOF(crtl+D) 
+we loop and read a cammand (for now we will accept any world) then we will test some critera in the command like one word(without arguments) how many world(we will put a number max of arguments ) etc... 
+2.parse the command : split the command into tokens  we will use the function split_command() it will return w string array;
+tha array will be use to identify every command if it is a built in command or external 
+3. test the command type : for now we have two type or a cammand
+$built in command we will do function to execute that 
+external we will execute the binary file of a command using   PATH  of it
+
