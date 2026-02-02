@@ -10,27 +10,92 @@
 #define  max_size 64
 
 
+
 void execute_command(char **tokens){
     pid_t pid;
     int status;
     pid = fork();
     if(pid == -1 ){
-        perror("error to create a child process \n");
+        perror("error \n");
+        exit(EXIT_FAILURE);
     }
     else if (pid == 0)
     {
         if(execvp(tokens[0],tokens)==-1){
-            perror("error detected");
+            perror("error");
         }
-        exit(1);
+        exit(EXIT_FAILURE);
     }
     else
     {
         wait(NULL);
     }
+}
+
+void cd_command(char** tokens){
+    if (tokens !=NULL){
+        if(chdir(tokens[1])!=0){
+            perror("error ");
+        }
+        else{
+            printf("change directory to %s\n",tokens[1]);
+        }
+    }
+}
+
+void help_command(char** tokens){
+    if(tokens != NULL){
+        printf("help menu   : \n 1.use man page : man command \n 2.use --help : command --help \n 3.use apropos : apropos keyword\n");
+    }
+}
+
+void type_command(char** tokens){
+    if(tokens != NULL){
+            char *builtin_list[] ={"cd","help","type","sname",NULL};
+            int found = 0;
+            for(int i =0 ; builtin_list[i]!=NULL;i++){
+                if (strcmp(tokens[1],builtin_list[i])==0){
+                    printf("%s is built in command \n",tokens[1]); 
+                    found = 1;
+            }
+        }
+            if(found ==0){
+                printf("%s is external command\n",tokens[1]);
+            }
+    }
+}
+
+void sname_command(char** tokens){
+    if (tokens != NULL)
+    {
+        printf("Shell name : yazid Shell \n");
+    }
     
+}
+
+
+
+
+void  check_command(char **tokens){
+    char *builtin_list[] ={"cd","help","type","sname",NULL};
+    if(tokens == NULL){
+        exit(EXIT_FAILURE);
+    }
+    else{
+        void (*builin_function[])(char**)={cd_command,help_command,type_command,sname_command};
+        int found=0;
+        for(int i =0 ;builtin_list[i] != NULL;i++){
+            if(strcmp(tokens[0],builtin_list[i])==0){
+                builin_function[i](tokens);
+                found = 1;
+                break;
+            }
     
-    
+        }
+        if (found == 0){
+            execute_command(tokens);
+        }
+    }
 }
 
 char** split_command(char* cmd){ // we split the command into arguments     
@@ -110,7 +175,7 @@ void line_loop(){
         fflush(stdout);
         command =write_command();
         arg=split_command(command);
-        execute_command(arg);
+        check_command(arg);
         free(arg);
         if (command && strlen(command)>0)
             printf("\ncommand:  %s recieved \n",command);
